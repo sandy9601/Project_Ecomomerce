@@ -19,11 +19,11 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
-    profileImage: {
-        type: String,
-        required: true,
-        trim:true
-    }, // s3 link
+    // profileImage: {
+    //     type: String,
+    //     required: true,
+    //     trim:true
+   // }, // s3 link
     phone: {
         type: String,
         required: true,

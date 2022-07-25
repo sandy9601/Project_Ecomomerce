@@ -5,7 +5,7 @@ const{userCreate}=require("../controllers/userController")
 
 module.exports = router;
 
-router.post("/register",awsApi,userCreate);
+router.post("/register",userCreate);
 
 
 
