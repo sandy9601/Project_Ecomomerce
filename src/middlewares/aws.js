@@ -33,7 +33,6 @@ let uploadFile = async (file) => {
       if (err) {
         return reject({ error: err });
       }
-      //console.log(data)
       console.log("file uploaded succesfully");
       return resolve(data.Location);
     });
@@ -43,21 +42,32 @@ let uploadFile = async (file) => {
 const awsApi = async function (req, res, next) {
   try {
     let files = req.files;
+    if (files.length == 0) {
+      return res
+        .status(400)
+        .send({ status: false, message: "No file found in profileImage" });
+    }
 
-    // console.log(files)
+    if (!/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(files[0].originalname)) {
+      return res
+        .status(400)
+        .send({
+          status: false,
+          message: "send profileimage in image formate only ex; gif,jpeg,png",
+        });
+    }
+
     if (files && files.length > 0) {
-      //upload to s3 and get the uploaded link
-      // res.send the link back to frontend/postman
       let uploadedFileURL = await uploadFile(files[0]);
       req.uploadedFileURL = uploadedFileURL;
-      //return  res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
-    } else {
-      res.status(400).send({ msg: "No file found" });
     }
+
+    req.awsApi = awsApi;
+
     next();
   } catch (err) {
     res.status(500).send({ msg: err });
   }
 };
 
-module.exports = { awsApi };
+module.exports = { awsApi, uploadFile };

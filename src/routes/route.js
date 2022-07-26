@@ -9,12 +9,13 @@ const {
 } = require("../controllers/userController");
 const { updateValidatior } = require("../validator/updateValidator");
 const { userValidation } = require("../validator/userValidator");
+const {userUpdateAuthorization}=require("../authorization/userUpdate")
 
 // *---------------------------userApis-------------------------------------------------------------------------------------------------------------
-router.post("/register", userValidation, awsApi, userCreate);
+router.post("/register", awsApi,userValidation,userCreate);
 router.get("/user/:userId/profile", getapi);
 router.post("/login", logInUser);
-router.put("/user/:userId/profile", updateValidatior, updateUser);
+router.put("/user/:userId/profile",userUpdateAuthorization, updateValidatior, updateUser);
 
 
 

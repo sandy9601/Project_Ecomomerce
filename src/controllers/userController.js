@@ -96,7 +96,7 @@ const logInUser = async function (req, res) {
     const passwordcheck = bcrypt.compareSync(password, check.password); // true
     if (!passwordcheck)
       return res
-        .status(400)
+        .status(401)
         .send({ status: false, msg: "password is incorrect" });
 
     let token = JWT.sign(
@@ -128,7 +128,7 @@ const logInUser = async function (req, res) {
 const updateUser = async function (req, res) {
     let userId = req.params.userId
     let final = req.final
-    console.log(final)
+   // console.log(final)
     const updateResult = await userModel.findOneAndUpdate({ _id: userId }, final, { new: true })
     return res.status(200).send({ status: true, message: "User profile updated", Data: updateResult })
 }
