@@ -27,62 +27,12 @@ const getapi = async function (req, res) {
   try {
     const userId = req.params.userId;
 
-    if (!mongoose.isValidObjectId(userId)) {
+      const resuser = await userModel.findById({ _id: userId });
+      if(resuser){
       return res
-        .status(400)
-        .send({ status: false, message: `${userId} is Invalid UserId` });
-    }
-
-    const getUser = await userModel.findById({ _id: userId });
-    if (!getUser) {
-      return res.status(404).send({
-        status: false,
-        message: `no user found with this  ${userId} UserId`,
-      });
-    }
-
-    if (!req.headers.authorization) {
-      return res
-        .status(401)
-        .send({ status: false, message: "token must be present" });
-    }
-
-    token = req.headers.authorization.split(" ")[1];
-    if (!token) {
-      return res
-        .status(401)
-        .send({ status: false, message: "token must be present" });
-    }
-
-    JWT.verify(
-      token,
-      secretkey,
-      { ignoreExpiration: true },
-      function (error, decoded) {
-        if (error) {
-          return res
-            .status(401)
-            .send({ status: false, message: "invalid token" });
-        }
-
-        if (Date.now() > decoded.exp * 1000) {
-          return res
-            .status(401)
-            .send({ status: false, message: "token expired" });
-        }
-        const validuserid = decoded.userId;
-        if (validuserid != userId) {
-          return res.status(401).send({
-            status: false,
-            message: "this user is not authorized to get details of others ",
-          });
-        }
-      }
-    );
-
-    res
       .status(200)
-      .send({ status: true, message: "User profile details", data: getUser });
+      .send({ status: true, message: "User profile details", data: resuser });
+      }
   } catch (error) {
     return res.status(500).send({ status: false, error: error.message });
   }

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const secretKey = "Products Management";
 const userModel = require("../models/userModel");
 
-const userUpdateAuthorization = async function (req, res, next) {
+const auth = async function (req, res, next) {
   try {
     const userId = req.params.userId;
 
@@ -54,7 +54,7 @@ const userUpdateAuthorization = async function (req, res, next) {
             .status(403)
             .send({
               status: false,
-              message: "this user is not authorized to update ",
+              message: "not autherized",
             });
         }
 
@@ -66,4 +66,4 @@ const userUpdateAuthorization = async function (req, res, next) {
   }
 };
 
-module.exports = { userUpdateAuthorization };
+module.exports = { auth };
