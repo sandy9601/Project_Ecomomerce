@@ -87,6 +87,7 @@ const userValidation = async function (req, res, next) {
         message: `${phone} is invalid please enter a valid phone number`,
       });
     }
+    ///data.phone="+91"+phone
     const checkPhone = await userModel.findOne({ phone: phone });
     if (checkPhone) {
       return res.status(400).send({

@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const {uploadFile}=require("../middlewares/aws")
+const bcrypt = require("bcrypt");
 
 
 const isValid = function (value) {
@@ -211,6 +212,7 @@ if(profileImage.length==0){
   }
  
   if (profileImage.length != 0) {
+    //console.log(profileImage[0])
     if (!/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(profileImage[0].originalname)) {
         return res
           .status(400)
