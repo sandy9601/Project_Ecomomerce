@@ -115,8 +115,13 @@ const userValidation = async function (req, res, next) {
     data.password = hash; // * assigning dcrypted password
 
     // *addressValidation
-
+try{
     data.address = JSON.parse(data.address);
+}
+    catch(error)
+    {
+res.status(400).send({status:false,message:"pincode should not start with 0"})
+    }
     var { street, city, pincode } = data.address.shipping;
 
     //* streetValidation In shipping
@@ -209,6 +214,7 @@ const userValidation = async function (req, res, next) {
     }
 
     next();
+    
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
   }
