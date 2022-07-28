@@ -51,7 +51,7 @@ const productUpdate = async function (req, res, next) {
     if (userCheck.isDeleted == true) {
       return res
         .status(400)
-        .send({ status: false, message: "we cannot updated deleted product" });
+        .send({ status: false, message: "we cannot update deleted product" });
     }
 
     var productImage = req.files;
