@@ -14,7 +14,6 @@ const productCreate = async function (req, res) {
       message: "product created successfully",
       data: createProduct,
     });
-    console.log(installments)
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
   }

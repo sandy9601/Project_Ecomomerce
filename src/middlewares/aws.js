@@ -48,7 +48,7 @@ const awsApi = async function (req, res, next) {
         .send({ status: false, message: "No file found in profileImage" });
     }
 
-    if (!/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(files[0].originalname)) {
+    if (!/\.(gif|jpe?g|tiff?|png|webp|bmp|jfif)$/i.test(files[0].originalname)) {
       return res
         .status(400)
         .send({

@@ -125,7 +125,7 @@ const productUpdate = async function (req, res, next) {
     // * currencyId validation
 
     if (currencyId) {
-      if (currencyId != "INR") {
+      if (currencyId.toUpperCase() != "INR") {
         return res.status(400).send({
           status: false,
           message: "currencyId formate is not correct",
@@ -160,7 +160,7 @@ const productUpdate = async function (req, res, next) {
 
     if (productImage.length != 0) {
       if (
-        !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(productImage[0].originalname)
+        !/\.(gif|jpe?g|tiff?|png|webp|bmp|jfif)$/i.test(productImage[0].originalname)
       ) {
         return res.status(400).send({
           status: false,
