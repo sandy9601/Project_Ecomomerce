@@ -79,7 +79,7 @@ if(!price||price==""){
     return res.status(400).send({status:false,message:"price is required"})
 }
       if (price){
-      if(!/^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/.test(price)){
+      if(!/^[1-9]\d{0,7}(?:\.\d{1,4})?|\.\d{1,4}$/.test(price)){
         return res
            .status(400)
       .send({ status: false, message: "price formate is not correct" })
@@ -120,7 +120,7 @@ if(!price||price==""){
    
     // * styleValidation
 if(style){
-      if (!isValidName(style)) {
+      if (!isValidUserDetails(style)) {
         return res.status(400).send({
           status: false,
           message: `${style} is not a valid formate  for style`,

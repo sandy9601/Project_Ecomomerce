@@ -7,6 +7,9 @@ const isValid = function (value) {
   if (typeof value === "string" && value.trim().length === 0) return false;
   return true;
 };
+const isValidUserDetails = (UserDetails) => {
+    if (/^(?=.*?[a-zA-Z])[. %?a-zA-Z\d ]+$/.test(UserDetails)) return true;
+  };
 
 const isValidName = (name) => {
   if (/^[ a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name)) return true;
@@ -70,7 +73,7 @@ const productUpdate = async function (req, res, next) {
           .send({ status: false, message: "title is required" });
       }
 
-      if (!isValidName(title)) {
+      if (!isValidUserDetails(title)) {
         return res.status(400).send({
           status: false,
           message: `${title} is not a valid formate  for title`,
@@ -93,7 +96,7 @@ const productUpdate = async function (req, res, next) {
           .status(400)
           .send({ status: false, message: "description is required" });
       }
-      if (!isValidName(description)) {
+      if (!isValidUserDetails(description)) {
         return res.status(400).send({
           status: false,
           message: `${description} is not a valid formate  for description`,
@@ -110,7 +113,7 @@ const productUpdate = async function (req, res, next) {
           .send({ status: false, message: "price is required" });
       }
       if (price) {
-        if (!/^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/.test(price)) {
+        if (!/^[1-9]\d{0,7}(?:\.\d{1,4})?|\.\d{1,4}$/.test(price)) {
           return res
             .status(400)
             .send({ status: false, message: "price formate is not correct" });
@@ -178,7 +181,7 @@ const productUpdate = async function (req, res, next) {
     // * styleValidation
     if (style) {
       if (style) {
-        if (!isValidName(style)) {
+        if (!isValidUserDetails(style)) {
           return res.status(400).send({
             status: false,
             message: `${style} is not a valid formate  for style`,
@@ -197,12 +200,16 @@ const productUpdate = async function (req, res, next) {
             }
         }
         if (Array.isArray(array)) {
-            final.availableSizes=array
+            let uniqeSize = new Set(array)
+          let result = [...uniqeSize]
+
+            final.availableSizes=result
+
         }
     }
          
     if (installments) {
-      if (!/^[0-9]$/.test(installments))
+      if (!/^[0-9]+$/.test(installments))
         return res.status(400).send({
           status: false,
           message: "installments will only consist number",
