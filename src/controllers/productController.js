@@ -28,10 +28,10 @@ const getProduct = async function (req, res) {
     let query = req.query;
     let { size, name, priceGreaterThan, priceLessThan } = query;
     if (size) {
-      filter.availableSizes = size;
+      filter.availableSizes ={$in:size.split(",").map((x)=>x.toUpperCase().trim())}
     }
     if (name) {
-      filter.title = name;
+      filter.title = {$in:name}
     }
     if (priceGreaterThan) {
       filter.price = { $gt: priceGreaterThan };
