@@ -46,7 +46,7 @@ if (!isValid(title)) {
       .send({ status: false, message: "title is required" });
   }
 
-  if (!isValidName(title)) {
+  if (!isValidUserDetails(title)) {
     return res.status(400).send({
       status: false,
       message: `${title} is not a valid formate  for title`,
@@ -65,7 +65,7 @@ if (!isValid(title)) {
           .status(400)
           .send({ status: false, message: "description is required" });
       }
-      if (!isValidName(description)) {
+      if (!isValidUserDetails(description)) {
         return res.status(400).send({
           status: false,
           message: `${description} is not a valid formate  for description`,
@@ -143,13 +143,17 @@ if(style){
            
         }
         if (Array.isArray(array)) {
-            data.availableSizes=array
+            let uniqeSize = new Set(array)
+          let result = [...uniqeSize]
+
+            data.availableSizes=result
+
         }
     }
 
     
     if(installments){
-        if(!/^[0-9]$/.test(installments))
+        if(!/^[0-9]+$/.test(installments))
         return res.status(400).send({status:false,message:"installments will only consist number"})
     }
 

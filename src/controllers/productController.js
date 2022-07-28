@@ -31,7 +31,7 @@ const getProduct = async function (req, res) {
       filter.availableSizes ={$in:size.split(",").map((x)=>x.toUpperCase().trim())}
     }
     if (name) {
-      filter.title = {$in:name}
+        filter.title = {$regex : ".*"+name.toLowerCase()+".*"}
     }
     if (priceGreaterThan) {
       filter.price = { $gt: priceGreaterThan };
