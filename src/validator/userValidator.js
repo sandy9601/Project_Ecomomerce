@@ -19,12 +19,14 @@ const userValidation = async function (req, res, next) {
     let data = req.body;
     var { fname, lname, email, phone, password, address } = data;
 
-    // * fnameValidation
+    
     if (Object.keys(data).length == 0) {
       return res
         .status(400)
         .send({ status: false, message: "Body couldnot be empty" });
     }
+
+    // * fnameValidation
 
     if (!isValid(fname)) {
       return res
@@ -120,7 +122,7 @@ try{
 }
     catch(error)
     {
-res.status(400).send({status:false,message:"pincode should not start with 0"})
+return res.status(400).send({status:false,message:"pincode should not start with 0"})
     }
     var { street, city, pincode } = data.address.shipping;
 
@@ -214,7 +216,7 @@ res.status(400).send({status:false,message:"pincode should not start with 0"})
     }
 
     next();
-    
+
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
   }

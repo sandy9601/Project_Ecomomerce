@@ -2,7 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const secretkey = "Products Management";
-const mongoose = require("mongoose");
+
 
 //*..................................................userCreation.............................................................//
 
@@ -11,30 +11,13 @@ const userCreate = async function (req, res) {
     let data = req.body;
     data.profileImage = req.uploadedFileURL;
     const createUser = await userModel.create(data);
-    res.status(201).send({
+    return res.status(201).send({
       status: true,
       message: "User created successfully",
       data: createUser,
     });
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
-  }
-};
-
-//*...................................................getapi.............................................................//
-
-const getapi = async function (req, res) {
-  try {
-    const userId = req.params.userId;
-
-      const resuser = await userModel.findById({ _id: userId });
-      if(resuser){
-      return res
-      .status(200)
-      .send({ status: true, message: "User profile details", data: resuser });
-      }
-  } catch (error) {
-    return res.status(500).send({ status: false, error: error.message });
   }
 };
 
@@ -79,23 +62,43 @@ const logInUser = async function (req, res) {
   }
 };
 
+//*...................................................getapi.............................................................//
+
+const getapi = async function (req, res) {
+  try {
+    const userId = req.params.userId;
+
+    const resuser = await userModel.findById({ _id: userId });
+    if (resuser) {
+      return res
+        .status(200)
+        .send({ status: true, message: "User profile details", data: resuser });
+    }
+  } catch (error) {
+    return res.status(500).send({ status: false, error: error.message });
+  }
+};
+
+
 //*...................................................updatenApi.............................................................//
 
 const updateUser = async function (req, res) {
-  let userId = req.params.userId;
-  let final = req.final;
-  const updateResult = await userModel.findOneAndUpdate(
-    { _id: userId },
-    final,
-    { new: true }
-  );
-  return res
-    .status(200)
-    .send({
+  try {
+    let userId = req.params.userId;
+    let final = req.final;
+    const updateResult = await userModel.findOneAndUpdate(
+      { _id: userId },
+      final,
+      { new: true }
+    );
+    return res.status(200).send({
       status: true,
       message: "User profile updated",
       Data: updateResult,
     });
+  } catch (err) {
+    res.status(500).send({ status: false, error: err.message });
+  }
 };
 
 module.exports = { userCreate, getapi, logInUser, updateUser };

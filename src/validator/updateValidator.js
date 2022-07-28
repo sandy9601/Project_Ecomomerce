@@ -19,6 +19,8 @@ const isValidName = (name) => {
 let validName = /^[a-zA-Z ]{3,30}$/;
 let validPass = /^[a-zA-Z0-9@*&]{8,15}$/;
 
+
+
 const updateValidatior = async function (req, res, next) {
 
   let updateData = req.body;
