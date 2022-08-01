@@ -10,6 +10,15 @@ const isValidUserDetails = (UserDetails) => {
   if (/^(?=.*?[a-zA-Z])[. %?a-zA-Z\d ]+$/.test(UserDetails)) return true;
 };
 
+
+let parseJSONSafely= function(str){
+  try {
+      return JSON.parse(str);
+  } catch (e) {
+      return null
+  }
+}
+
 const isValidName = (name) => {
   if (/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name)) return true;
 };
@@ -117,103 +126,41 @@ const userValidation = async function (req, res, next) {
     data.password = hash; // * assigning dcrypted password
 
     // *addressValidation
-try{
-    data.address = JSON.parse(data.address);
-}
-    catch(error)
-    {
-return res.status(400).send({status:false,message:"pincode should not start with 0"})
-    }
-    var { street, city, pincode } = data.address.shipping;
+   
+    address = parseJSONSafely(address)
+        //console.log(address)
 
-    //* streetValidation In shipping
+        if (!isNaN(address) || !address) return res.status(400).send({ status: false, message: "Address should be in Object Format look like this. {'key':'value'} and value cannot start with 0-Zero" })
+        if (!Object.keys(address).length) return res.status(400).send({ status: false, message: "Shipping and Billing Address are Required" })
+        let { shipping, billing, ...remaining } = address
+        if (!address.hasOwnProperty("shipping")) return res.status(400).send({ status: false, message: "Shipping Address is required " })
+        if (!address.hasOwnProperty("billing")) return res.status(400).send({ status: false, message: "billing Address is required " })
 
-    if (!isValid(street)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "street is required in shipping address",
-        });
-    }
-    if (!isValidUserDetails(street)) {
-      return res.status(400).send({
-        status: false,
-        message: `${street} is inavlid formate for street in shipping address`,
-      });
-    }
+        if (Object.keys(remaining).length > 0) return res.status(400).send({ status: false, message: "Invalid attribute in address body" })
 
-    //* cityValidation in shipping
+        if (typeof shipping !== "object") return res.status(400).send({ status: false, message: "shipping is invalid type" })
+        if (!shipping.hasOwnProperty("street")) return res.status(400).send({ status: false, message: "Shipping street is required " })
+        if (!shipping.hasOwnProperty("city")) return res.status(400).send({ status: false, message: "Shipping city is required " })
+        if (!shipping.hasOwnProperty("pincode")) return res.status(400).send({ status: false, message: "Shipping pincode is required " })
 
-    if (!isValid(city)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "city is required in shipping address",
-        });
-    }
-    if (!isValidName(city)) {
-      return res.status(400).send({
-        status: false,
-        message: `${city} is not a valid formate  for city in shipping address`,
-      });
-    }
+        if (!isValid(shipping.street)) return res.status(400).send({ status: false, message: " shipping street is invalid " })
+        if (!isValid(shipping.city)) return res.status(400).send({ status: false, message: " shipping city is invalid" })
+        if (!isValidUserDetails(shipping.city)) return res.status(400).send({ status: false, message: "Shipping city is invalid" })
+        if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(billing.pincode)) return res.status(400).send({ status: false, message: " shipping pincode is invalid" })
 
-    // * pincodeValidation
 
-    if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(pincode)) {
-      return res.status(400).send({
-        status: false,
-        message: " enter valid pincode in number only in shipping address",
-      });
-    }
 
-    // * billingAddressValidation
+        if (typeof billing !== "object") return res.status(400).send({ status: false, message: "billing is invalid type" })
+        if (!billing.hasOwnProperty("street")) return res.status(400).send({ status: false, message: "billing street is required " })
+        if (!billing.hasOwnProperty("city")) return res.status(400).send({ status: false, message: "billing city is required " })
+        if (!billing.hasOwnProperty("pincode")) return res.status(400).send({ status: false, message: "billing pincode is required " })
 
-    var { street, city, pincode } = data.address.billing;
-    //* streetValidation in billing address
+        if (!isValid(billing.street)) return res.status(400).send({ status: false, message: " billing street is invalid " })
+        if (!isValid(billing.city)) return res.status(400).send({ status: false, message: "billing city is invalid" })
+        if (!isValidUserDetails(billing.city)) return res.status(400).send({ status: false, message: "Shipping city is invalid" })
+        if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(billing.pincode)) return res.status(400).send({ status: false, message: " billing pincode is invalid" })
 
-    if (!isValid(street)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "street is required in  billing address",
-        });
-    }
-    if (!isValidUserDetails(street)) {
-      return res.status(400).send({
-        status: false,
-        message: `${street} is inavlid formate for street in billing address`,
-      });
-    }
-
-    //* cityValidation in billing address
-
-    if (!isValid(city)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "city is required in billing address",
-        });
-    }
-    if (!isValidName(city)) {
-      return res.status(400).send({
-        status: false,
-        message: `${city} is not a valid formate  for city in billing address`,
-      });
-    }
-
-    // * pincodeValidation in billing address
-
-    if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(pincode)) {
-      return res.status(400).send({
-        status: false,
-        message: " enter valid pincode in number only in billing address",
-      });
-    }
+        data.address = address
 
     next();
 

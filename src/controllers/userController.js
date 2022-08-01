@@ -67,6 +67,14 @@ const logInUser = async function (req, res) {
 const getapi = async function (req, res) {
   try {
     const userId = req.params.userId;
+    if (req.userid != userId) {
+      return res
+        .status(403)
+        .send({
+          status: false,
+          message: "not authorized",
+        });
+    }
 
     const resuser = await userModel.findById({ _id: userId });
     if (resuser) {
@@ -85,10 +93,13 @@ const getapi = async function (req, res) {
 const updateUser = async function (req, res) {
   try {
     let userId = req.params.userId;
-    let final = req.final;
+  
+   // req.finduser=finduser
+   
+  
     const updateResult = await userModel.findOneAndUpdate(
       { _id: userId },
-      final,
+      req.findUser,
       { new: true }
     );
     return res.status(200).send({

@@ -48,16 +48,8 @@ const auth = async function (req, res, next) {
             .status(401)
             .send({ status: false, message: "token expired" });
         }
-        const validuserid = decoded.userId;
-        if (validuserid != userId) {
-          return res
-            .status(403)
-            .send({
-              status: false,
-              message: "not autherized",
-            });
-        }
-
+        req.userid= decoded.userId;
+     
         next();
       }
     );

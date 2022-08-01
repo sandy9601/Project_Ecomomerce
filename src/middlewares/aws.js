@@ -62,7 +62,6 @@ const awsApi = async function (req, res, next) {
       req.uploadedFileURL = uploadedFileURL;
     }
 
-    req.awsApi = awsApi;
 
     next();
   } catch (err) {
