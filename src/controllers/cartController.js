@@ -160,7 +160,7 @@ const createCart = async function (req, res) {
 
         return res
           .status(200)
-          .send({ status: true, message: "Su", data: updateCart });
+          .send({ status: true, message: "Success", data: updateCart });
       }
     } else {
       // * if cart not present creating it
@@ -187,7 +187,7 @@ const createCart = async function (req, res) {
 
     return res
       .status(201)
-      .send({ status: true, message: "Sus", data: cartCreated });
+      .send({ status: true, message: "Success", data: cartCreated });
   } catch (err) {
     res.status(500).send({ status: false, error: err });
   }
@@ -211,12 +211,14 @@ if(cartCheck.items.length==0){
 const getCart = async function (req,res){
     try{
       let userId=req.params.userId  
-      let cartdata=await cartModel.findOne({userId})
-      if(!cartdata){
+      let cartdata=await cartModel.findOne({userId:userId}).populate([{ path: "items.productId" }])
+
+      if(cartdata.items.length==0){
           return res.status(404).send({status:false,message:"the cart does not exists for the given userId"})    
       }
+      else{
             return res.status(200).send({status:true,message:"Sucess",data:cartdata})
-  
+      }
   
     } catch(error){
       res.status(500).send({status:false,message:error.message})
