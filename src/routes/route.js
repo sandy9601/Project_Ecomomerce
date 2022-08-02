@@ -12,7 +12,10 @@ const { userValidation } = require("../validator/userValidator");
 const {auth}=require("../middlewares/auth")
 const{productCreate,getProduct,UpdateProduct, getByid,deleteProduct}=require("../controllers/productController");
 const {productUpdate}=require("../validator/productUpdate")
-const {createCart}=require("../controllers/cartController")
+const {deletCart,getCart,createCart}=require("../controllers/cartController")
+
+
+
 // *---------------------------userApis-------------------------------------------------------------------------------------------------------------
 router.post("/register", userValidation,awsApi,userCreate);
 router.get("/user/:userId/profile", auth,getapi);
@@ -30,5 +33,7 @@ router.delete("/products/:productId",deleteProduct)
 // *---------------------------cartApis-------------------------------------------------------------------------------------------------------------
 
 router.post("/users/:userId/cart",createCart)
+router.get("/users/:userId/cart",getCart)
+router.delete("/users/:userId/cart",deletCart)
 
 module.exports = router;
