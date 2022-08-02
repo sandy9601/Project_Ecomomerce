@@ -12,7 +12,7 @@ const { userValidation } = require("../validator/userValidator");
 const {auth}=require("../middlewares/auth")
 const{productCreate,getProduct,UpdateProduct, getByid,deleteProduct}=require("../controllers/productController");
 const {productUpdate}=require("../validator/productUpdate")
-const {deletCart,getCart,createCart}=require("../controllers/cartController")
+const {deletCart,getCart,createCart,updateCart}=require("../controllers/cartController")
 
 
 
@@ -33,6 +33,7 @@ router.delete("/products/:productId",deleteProduct)
 // *---------------------------cartApis-------------------------------------------------------------------------------------------------------------
 
 router.post("/users/:userId/cart",createCart)
+router.put("/users/:userId/cart",updateCart)
 router.get("/users/:userId/cart",getCart)
 router.delete("/users/:userId/cart",deletCart)
 
