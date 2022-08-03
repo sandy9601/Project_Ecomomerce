@@ -13,10 +13,11 @@ const {auth}=require("../middlewares/auth")
 const{productCreate,getProduct,UpdateProduct, getByid,deleteProduct}=require("../controllers/productController");
 const {productUpdate}=require("../validator/productUpdate")
 const {deletCart,getCart,createCart,updateCart}=require("../controllers/cartController")
-
+const{createOrder,updateOrder}=require("../controllers/orderController")
 
 
 // *---------------------------userApis-------------------------------------------------------------------------------------------------------------
+
 router.post("/register", userValidation,awsApi,userCreate);
 router.get("/user/:userId/profile", auth,getapi);
 router.post("/login", logInUser);
@@ -36,5 +37,10 @@ router.post("/users/:userId/cart",createCart)
 router.put("/users/:userId/cart",updateCart)
 router.get("/users/:userId/cart",getCart)
 router.delete("/users/:userId/cart",deletCart)
+
+// *---------------------------orderApis-------------------------------------------------------------------------------------------------------------
+
+router.post("/users/:userId/orders",createOrder)
+router.put("/users/:userId/orders",updateOrder)
 
 module.exports = router;

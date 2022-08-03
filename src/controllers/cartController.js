@@ -23,6 +23,10 @@ const createCart = async function (req, res) {
     let reqbody = req.body;
 
     //* validation UserId
+    
+    if(Object.keys(reqbody).length===0){
+        return res.status(400).send({ status: false, message: "Body should Not Be Empty" });
+    }
 
     if (!mongoose.isValidObjectId(userId)) {
       return res
@@ -81,7 +85,7 @@ const createCart = async function (req, res) {
 
     // * finding productBy productId
 
-    let getProduct = await productModel.findById({ _id: productId });
+    let getProduct = await productModel.findOne({ _id: productId ,isDeleted:false});
 
     if (getProduct == null) {
       return res.status(400).send({
@@ -94,6 +98,17 @@ const createCart = async function (req, res) {
     //* checking if cart present
 
     let presentCart = await cartModel.findOne({ userId: userId });
+
+
+if(presentCart){
+    if(presentCart.items.length==0){
+        return res.status(400).send({
+            status: false,
+            message: "cart deleted",
+          });
+
+    }}
+
 
     if (presentCart !== null) {
 
@@ -134,7 +149,7 @@ const createCart = async function (req, res) {
             totalItems: data.totalItems,
           },
           { new: true }
-        );
+        ).populate([{ path: "items.productId" }]);
 
         // * sending updated cart
 
@@ -162,7 +177,7 @@ const createCart = async function (req, res) {
             totalItems: data.totalItems,
           },
           { new: true }
-        );
+        ).populate([{ path: "items.productId" }]);
 
         // * sending updated cart
 
@@ -171,7 +186,7 @@ const createCart = async function (req, res) {
           .send({ status: true, message: "Success", data: updateCart });
       }
     } else {
-        
+
       // * if cart not present creating it
 
       // * calculating price and quantity
@@ -190,13 +205,14 @@ const createCart = async function (req, res) {
       items: data.items,
       totalPrice: data.totalprice,
       totalItems: data.totalItems,
-    });
+    })
+    const createdCart=await cartModel.findOne({_id:cartCreated._id}).populate([{ path: "items.productId" }]);
 
     // * sending new cart in response
 
     return res
       .status(201)
-      .send({ status: true, message: "Success", data: cartCreated });
+      .send({ status: true, message: "Success", data: createdCart });
   } catch (err) {
     res.status(500).send({ status: false, error: err });
   }
@@ -205,12 +221,19 @@ const createCart = async function (req, res) {
 //*..................................................updateCart.............................................................//
 
 const updateCart = async function (req, res) {
+    try{
     const data = req.body
     const userId = req.params.userId
+
+    if(Object.keys(data).length===0){
+        return res.status(400).send({ status: false, message: "Body should Not Be Empty" });
+    }
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).send({ status: false, message: `${userId} is Invalid userId` });
     }
     const { cartId, productId, removeProduct } = data
+    if (!cartId)
+        return res.status(400).send({ status: false, message: "cartId is Mandatory" });
     if (cartId) {
         if (!mongoose.isValidObjectId(cartId)) {
             return res.status(400).send({ status: false, message: `${cartId} is Invalid cartId` });
@@ -221,59 +244,59 @@ const updateCart = async function (req, res) {
     if (!mongoose.isValidObjectId(productId)) {
         return res.status(400).send({ status: false, message: `${productId} is Invalid productId` });
     }
+
+    if( (removeProduct!=0) && (removeProduct!=1)){
+        return res.status(400).send({ status: false, message: "removeProduct is Not given or Not given in proprely it can [0 || 1] " }); 
+    }
+
     const final = {}
     let array = []
-    let arr = []
-    var quantity = []
     var totalPrice = 0
-    console.log(productId);
-    const cartData = await cartModel.findById({ _id: cartId })
-    console.log(cartData);
+
+    const cartData = await cartModel.findOne({_id: cartId ,userId:userId,"items.productId":productId}).populate([{path:"items.productId"}])
     if ((!cartData) || (cartData.totalItems === 0)) {
-        return res.status(400).send({ status: false, message: "Cart Not Exist or Empty Cart" })
+        return res.status(400).send({ status: false, message: "Cart Not Exist or product Not exits in cart" })
     }
-    console.log(cartData.items.includes({ productId: productId }));
-    
+
     for (let i = 0; i < cartData.items.length; i++) {
         if (removeProduct == 0) {
-            if (cartData.items[i].productId.valueOf() === productId) {
+            if (cartData.items[i].productId._id.valueOf() === productId) {
                 continue;
             }
             else {
                 array.push(cartData.items[i])
-                arr.push(cartData.items[i].productId)
-                quantity.push(cartData.items[i].quantity)
+                totalPrice += cartData.items[i].productId.price * (cartData.items[i].quantity)            
             }
         }
         else {
-            if (cartData.items[i].productId.valueOf() === productId) {
+            if (cartData.items[i].productId._id.valueOf() === productId) {
                 cartData.items[i].quantity--
                 if (cartData.items[i].quantity == 0) {
                     continue;
                 }
                 else {
                     array.push(cartData.items[i])
-                    arr.push(cartData.items[i].productId)
-                    quantity.push(cartData.items[i].quantity)
+                    totalPrice += cartData.items[i].productId.price * (cartData.items[i].quantity)                
                 }
             }
             else {
                 array.push(cartData.items[i])
-                arr.push(cartData.items[i].productId)
-                quantity.push(cartData.items[i].quantity)
+                totalPrice += cartData.items[i].productId.price * (cartData.items[i].quantity)
             }
         }
     }
-    const productData = await productModel.find({ _id: { $in: arr } })
-    for (let i = 0; i < productData.length; i++) {
-        totalPrice += productData[i].price * quantity[i]
-    }
+
     final.totalItems = array.length
     final.totalPrice = totalPrice
     final.items = array
-    const updateCart = await cartModel.findByIdAndUpdate({ _id: cartId }, final, { new: true })
+    const updateCart = await cartModel.findByIdAndUpdate({ _id: cartId }, final, { new: true }).populate([{path:"items.productId"}])
     return res.status(200).send({ status: true, message: "Success", data: updateCart })
-}
+
+} catch (err) {
+    res.status(500).send({ status: false, error: err });
+  }
+};
+
 
 //*..................................................getcart.............................................................//
 
@@ -281,12 +304,12 @@ const getCart = async function (req, res) {
     try {
       let userId = req.params.userId;
   
-      if (req.userid != userId) {
-        return res.status(403).send({
-          status: false,
-          message: "not authorized",
-        });
-      }
+    //   if (req.userid != userId) {
+    //     return res.status(403).send({
+    //       status: false,
+    //       message: "not authorized",
+    //     });
+    //   }
   
       let cartdata = await cartModel
         .findOne({ userId: userId })
