@@ -15,7 +15,7 @@ const createOrder = async function (req, res) {
     if (findingCart == null || findingCart.items.length == 0) {
       return res
         .status(400)
-        .send({ status: false, message: "cart doesnot exist" });
+        .send({ status: false, message: "please first add products in cart" });
     }
 
     var updateOrder = {};
@@ -48,7 +48,7 @@ const createOrder = async function (req, res) {
 const updateOrder = async function (req, res) {
   try {
     const userId = req.params.userId;
-    const status = req.body.status;
+    const status = req.body.status; 
     const orderId = req.body.orderId;
      if (!mongoose.isValidObjectId(userId)) {
       return res
@@ -69,6 +69,11 @@ const updateOrder = async function (req, res) {
       .findOne({ _id: orderId, userId: userId })
       .populate([{ path: "items.productId" }]);
 
+    if(!orderDetails){
+      return res
+        .status(400)
+        .send({ status: false, message: "No order Found" });
+    }
     if (orderDetails.status != "pending") {
       return res
         .status(400)
@@ -113,11 +118,11 @@ const updateOrder = async function (req, res) {
       .status(200)
       .send({
         status: true,
-        message: "Order Update Successfully",
+        message: "Success",
         data: orderDetails,
       });
   } catch (err) {
-    res.status(400).send({ status: false, error: err.message });
+    res.status(500).send({ status: false, error: err });
   }
 };
 

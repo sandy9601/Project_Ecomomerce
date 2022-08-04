@@ -10,6 +10,8 @@ const userCreate = async function (req, res) {
   try {
     let data = req.body;
     data.profileImage = req.uploadedFileURL;
+
+    //* creating New User
     const createUser = await userModel.create(data);
     return res.status(201).send({
       status: true,
@@ -26,6 +28,8 @@ const userCreate = async function (req, res) {
 const logInUser = async function (req, res) {
   try {
     const { email, password } = req.body;
+
+    //* Email and Password Validation
     if (!email)
       return res
         .status(400)
@@ -35,15 +39,18 @@ const logInUser = async function (req, res) {
         .status(400)
         .send({ status: false, msg: "password is required" });
 
+    //* finding Email in userModel DB
     const check = await userModel.findOne({ email: email });
     if (!check)
       return res.status(400).send({ status: false, msg: "incorrect email" });
+
+      //* converting simple password into bycrypt passwprd
     const passwordcheck = bcrypt.compareSync(password, check.password); // true
     if (!passwordcheck)
       return res
         .status(401)
         .send({ status: false, msg: "password is incorrect" });
-
+    //* creating JWT token
     let token = JWT.sign(
       {
         userId: check._id.toString(),
@@ -67,20 +74,13 @@ const logInUser = async function (req, res) {
 const getapi = async function (req, res) {
   try {
     const userId = req.params.userId;
-    if (req.userid != userId) {
-      return res
-        .status(403)
-        .send({
-          status: false,
-          message: "not authorized",
-        });
-    }
-
-    const resuser = await userModel.findById({ _id: userId });
-    if (resuser) {
+  
+    //* finding user in DB by using userId
+    const userData = await userModel.findById({ _id: userId });
+    if (userData) {
       return res
         .status(200)
-        .send({ status: true, message: "User profile details", data: resuser });
+        .send({ status: true, message: "User profile details", data: userData });
     }
   } catch (error) {
     return res.status(500).send({ status: false, error: error.message });
@@ -96,7 +96,7 @@ const updateUser = async function (req, res) {
   
    // req.finduser=finduser
    
-  
+  // Updating User Data By Using UserId
     const updateResult = await userModel.findOneAndUpdate(
       { _id: userId },
       req.findUser,

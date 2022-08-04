@@ -33,7 +33,7 @@ const createCart = async function (req, res) {
         .status(400)
         .send({ status: false, message: `${userId} is Invalid UserId` });
     }
-
+    
     let findUserId = await userModel.findById({ _id: userId });
 
     if (!findUserId) {

@@ -19,8 +19,8 @@ const{createOrder,updateOrder}=require("../controllers/orderController")
 // *---------------------------userApis-------------------------------------------------------------------------------------------------------------
 
 router.post("/register", userValidation,awsApi,userCreate);
-router.get("/user/:userId/profile", auth,getapi);
 router.post("/login", logInUser);
+router.get("/user/:userId/profile", auth,getapi);
 router.put("/user/:userId/profile",auth,updateValidation, updateUser);
 
 // *---------------------------ProductApis-------------------------------------------------------------------------------------------------------------
@@ -33,14 +33,14 @@ router.delete("/products/:productId",deleteProduct)
 
 // *---------------------------cartApis-------------------------------------------------------------------------------------------------------------
 
-router.post("/users/:userId/cart",createCart)
-router.put("/users/:userId/cart",updateCart)
-router.get("/users/:userId/cart",getCart)
-router.delete("/users/:userId/cart",deletCart)
+router.post("/users/:userId/cart", auth,createCart)
+router.put("/users/:userId/cart", auth,updateCart)
+router.get("/users/:userId/cart", auth,getCart)
+router.delete("/users/:userId/cart", auth,deletCart)
 
 // *---------------------------orderApis-------------------------------------------------------------------------------------------------------------
 
-router.post("/users/:userId/orders",createOrder)
-router.put("/users/:userId/orders",updateOrder)
+router.post("/users/:userId/orders", auth,createOrder)
+router.put("/users/:userId/orders", auth,updateOrder)
 
 module.exports = router;

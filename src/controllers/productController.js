@@ -35,80 +35,86 @@ const productCreate = async function (req, res) {
       isDeleted,
     } = data;
 
+    // checking the body is Empty Or not
     if (Object.keys(data).length == 0) {
       return res
         .status(400)
         .send({ status: false, message: "Body couldnot be empty" });
     }
 
-// * title validation
-      
-if (!isValid(title)) {
-    return res
-      .status(400)
-      .send({ status: false, message: "title is required" });
-  }
+    // * title validation
 
-  if (!isValidUserDetails(title)) {
-    return res.status(400).send({
-      status: false,
-      message: `${title} is not a valid formate  for title`,
-    });
-  }
-  const titleCheck=await productModel.findOne({title:title})
-  if(titleCheck){
-    return res.status(400).send({status:false,messsage:`title ${title} is already used try another one`})
-  }
+    if (!isValid(title)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "title is required" });
+    }
+
+    //* Validation For Title
+    if (!isValidUserDetails(title)) {
+      return res.status(400).send({
+        status: false,
+        message: `${title} is not a valid formate  for title`,
+      });
+    }
+
+    //* Checking Duplicate Title
+    const titleCheck = await productModel.findOne({ title: title })
+    if (titleCheck) {
+      return res.status(400).send({ status: false, messsage: `title ${title} is already used try another one` })
+    }
 
 
-// * description validation
+    // * description validation
 
-     if (!isValid(description)) {return res.status(400).send({ status: false, message: "description is required" })}
-        
-if(!/^[a-zA-Z]+(([',. -][a-zA-Z ])?[.a-zA-Z]*)*$/.test(description)){return res.status(400).send({status:false,message:"description is formate is not correct"})}
-if(!price){return res.status(400).send({status:false,message:"price is required"})}
-      if (price){
-      if(!/^[1-9]\d{0,7}(?:\.\d{1,4})?|\.\d{1,4}$/.test(price)){
+    if (!isValid(description)) { return res.status(400).send({ status: false, message: "description is required" }) }
+
+    if (!/^(?=.*?[a-zA-Z])[. ,%?a-zA-Z\d ]+$/.test(description)) { return res.status(400).send({ status: false, message: "description is formate is not correct" }) }
+    if (!price) { return res.status(400).send({ status: false, message: "price is required" }) }
+    if (price) {
+      if (!/^[1-9]\d{0,7}(?:\.\d{1,4})?|\.\d{1,4}$/.test(price)) {
         return res
-           .status(400)
-      .send({ status: false, message: "price formate is not correct" })
+          .status(400)
+          .send({ status: false, message: "price formate is not correct" })
       }
     }
 
-// * currencyId validation
+    // * currencyId validation
 
- if (currencyId){
- if(currencyId!="INR") {
-    return res
-      .status(400)
-      .send({ status: false, message: "currencyId formate is not correct" });
-  }}
-  else{
-    data.currencyId="INR"
-  }
-  
-  // * currencyId validation
+    if (currencyId) {
+      if (currencyId != "INR") {
+        return res
+          .status(400)
+          .send({ status: false, message: "currencyId formate is not correct" });
+      }
+    }
+    else {
+      data.currencyId = "INR"
+    }
 
-  if (currencyFormat){
-  if(currencyFormat!="₹") {
-     return res
-       .status(400)
-       .send({ status: false, message: "currencyFormat formate is not correct" });
-   }}
-   else{
-     data.currencyFormat="₹"
-   }
- 
-   if (isFreeShipping)
-   if(!["false"].includes(isFreeShipping)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "isFreeShipping formate is not correct" });
-   }
+    // * currencyId validation
 
-   
+    if (currencyFormat) {
+      if (currencyFormat != "₹") {
+        return res
+          .status(400)
+          .send({ status: false, message: "currencyFormat formate is not correct" });
+      }
+    }
+    else {
+      data.currencyFormat = "₹"
+    }
+
+    if (isFreeShipping)
+      if (!["false"].includes(isFreeShipping)) {
+        return res
+          .status(400)
+          .send({ status: false, message: "isFreeShipping formate is not correct" });
+      }
+
+
     // * styleValidation
-if(style){
+    if (style) {
       if (!isValidUserDetails(style)) {
         return res.status(400).send({
           status: false,
@@ -116,55 +122,55 @@ if(style){
         });
       }
     }
- 
+
     // * availableSizesValidation
 
-    if(!availableSizes||availableSizes==""){
-        return res.status(400).send({status:false,message:"availableSizes is required"})
+    if (!availableSizes || availableSizes == "") {
+      return res.status(400).send({ status: false, message: "availableSizes is required" })
     }
 
     if (availableSizes) {
-        let array = availableSizes.split(",").map(x => x.toUpperCase().trim())
-        for (let i = 0; i < array.length; i++) {
-            if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim()))) {
-                return res.status(400).send({ status: false, message: 'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]' })
-            }
-           
+      let array = availableSizes.split(",").map(x => x.toUpperCase().trim())
+      for (let i = 0; i < array.length; i++) {
+        if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim()))) {
+          return res.status(400).send({ status: false, message: 'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]' })
         }
-        if (Array.isArray(array)) {
-            let uniqeSize = new Set(array)
-          let result = [...uniqeSize]
 
-            data.availableSizes=result
+      }
+      if (Array.isArray(array)) {
+        let uniqeSize = new Set(array)
+        let result = [...uniqeSize]
 
-        }
-    }
-    
-    if(installments){
-        if(!/^[0-9]+$/.test(installments))
-        return res.status(400).send({status:false,message:"installments will only consist number"})
+        data.availableSizes = result
+
+      }
     }
 
-
-    if(deletedAt){
-        if(deletedAt!='null')
-        return res.status(400).send({status:false,message:"deletedAt is not required at the moment"})
-
+    if (installments) {
+      if (!/^[0-9]+$/.test(installments))
+        return res.status(400).send({ status: false, message: "installments will only consist number" })
     }
 
-    if(isDeleted){
-        if(isDeleted!='false')
-        return res.status(400).send({status:false,message:"isDeleted is false by defualt"})
+
+    if (deletedAt) {
+      if (deletedAt != 'null')
+        return res.status(400).send({ status: false, message: "deletedAt is not required at the moment" })
 
     }
 
+    if (isDeleted) {
+      if (isDeleted != 'false')
+        return res.status(400).send({ status: false, message: "isDeleted is false by defualt" })
+
+    }
+    //* creating product
     const createProduct = await productModel.create(data);
-    if(createProduct)
-    return res.status(201).send({
-      status: true,
-      message: "Success",
-      data: createProduct,
-    });
+    if (createProduct)
+      return res.status(201).send({
+        status: true,
+        message: "Success",
+        data: createProduct,
+      });
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
   }
@@ -178,10 +184,10 @@ const getProduct = async function (req, res) {
     let query = req.query;
     let { size, name, priceGreaterThan, priceLessThan } = query;
     if (size) {
-      filter.availableSizes ={$in:size.split(",").map((x)=>x.toUpperCase().trim())}
+      filter.availableSizes = { $in: size.split(",").map((x) => x.toUpperCase().trim()) }
     }
     if (name) {
-        filter.title = {$regex : ".*"+name.toLowerCase().trim()+".*"}
+      filter.title = { $regex: ".*" + name.toLowerCase().trim() + ".*" }
     }
     if (priceGreaterThan) {
       filter.price = { $gt: priceGreaterThan };
@@ -275,13 +281,13 @@ const deleteProduct = async function (req, res) {
     }
     const getByid = await productModel.findOneAndUpdate(
       { $and: [{ isDeleted: false }, { _id: productid }] },
-      { isDeleted: true,deletedAt:Date.now()},
+      { isDeleted: true, deletedAt: Date.now() },
       { new: true }
     );
     if (getByid) {
       return res
         .status(200)
-        .send({ status: true, message: "successfully deleted the product"});
+        .send({ status: true, message: "successfully deleted the product" });
     } else {
       return res
         .status(404)
