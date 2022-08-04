@@ -33,14 +33,6 @@ const updateValidation = async function (req, res, next) {
   try{
   let updateData = req.body;
   let userId=req.params.userId
-  if (req.userid != userId) {
-    return res
-      .status(403)
-      .send({
-        status: false,
-        message: "not authorized",
-      });
-  }
   var findUser=await userModel.findById({_id:userId})
   var { fname, lname, email, phone, password, address,} =
     updateData;

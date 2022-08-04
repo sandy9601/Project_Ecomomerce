@@ -42,13 +42,6 @@ const createCart = async function (req, res) {
         .send({ status: false, message: "no user exist with this user id" });
     }
 
-    // if (req.userid != userId) {
-    //   return res.status(403).send({
-    //     status: false,
-    //     message: "not authorized",
-    //   });
-    // }
-
     // * validation requestBody
 
     let { productId, quantity } = reqbody;
@@ -303,30 +296,22 @@ const updateCart = async function (req, res) {
 const getCart = async function (req, res) {
     try {
       let userId = req.params.userId;
-  
-    //   if (req.userid != userId) {
-    //     return res.status(403).send({
-    //       status: false,
-    //       message: "not authorized",
-    //     });
-    //   }
-  
-      let cartdata = await cartModel
+       let cartdata = await cartModel
         .findOne({ userId: userId })
         .populate([{ path: "items.productId" }]);
   
-      if (cartdata.items.length == 0) {
-        return res
-          .status(404)
-          .send({
-            status: false,
-            message: "the cart does not exists for the given userId",
-          });
-      } else {
+    //   if (cartdata.items.length == 0) {
+    //     return res
+    //       .status(404)
+    //       .send({
+    //         status: false,
+    //         message: "the cart does not exists for the given userId",
+    //       });
+    //   } else {
         return res
           .status(200)
           .send({ status: true, message: "Success", data: cartdata });
-      }
+     // }
     } catch (error) {
       res.status(500).send({ status: false, message: error.message });
     }
@@ -339,14 +324,7 @@ const getCart = async function (req, res) {
 const deletCart = async function (req, res) {
   const userId = req.params.userId;
 
-  if (req.userid != userId) {
-    return res.status(403).send({
-      status: false,
-      message: "not authorized",
-    });
-  }
-
-  const cartCheck = await cartModel.findOne({ userId: userId });
+   const cartCheck = await cartModel.findOne({ userId: userId });
   if (cartCheck.items.length == 0) {
     return res
       .status(404)
@@ -359,7 +337,6 @@ const deletCart = async function (req, res) {
   );
   return res.status(204).send({ status: true, message: "Success" });
 };
-
 
 
 module.exports = {createCart,updateCart,getCart,deletCart};

@@ -49,6 +49,14 @@ const auth = async function (req, res, next) {
             .send({ status: false, message: "token expired" });
         }
         req.userid= decoded.userId;
+        const uersId=req.params.userId
+
+     if (req.userid != uersId) {
+        return res.status(403).send({
+          status: false,
+          message: "not authorized",
+        });
+      }
      
         next();
       }
@@ -58,4 +66,27 @@ const auth = async function (req, res, next) {
   }
 };
 
-module.exports = { auth };
+
+
+
+// const authorization=async function(req,res,next){
+//   try{
+// const uersId=req.params.userId
+
+//      if (req.userid != uersId) {
+//         return res.status(403).send({
+//           status: false,
+//           message: "not authorized",
+//         });
+//       }
+//       next()
+// }
+// catch(err){
+//   res.status(500).send({status:false,error:err.message})
+// }
+// }
+
+
+
+
+module.exports = { auth};
