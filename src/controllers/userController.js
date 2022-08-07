@@ -93,10 +93,8 @@ const getapi = async function (req, res) {
 const updateUser = async function (req, res) {
   try {
     let userId = req.params.userId;
-  
-   // req.finduser=finduser
-   
-  // Updating User Data By Using UserId
+     
+  // * Updating User Data By Using UserId
     const updateResult = await userModel.findOneAndUpdate(
       { _id: userId },
       req.findUser,
@@ -104,8 +102,8 @@ const updateUser = async function (req, res) {
     );
     return res.status(200).send({
       status: true,
-      message: "User profile updated",
-      Data: updateResult,
+      message: "Success",
+      data: updateResult,
     });
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });

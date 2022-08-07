@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const{bodyValidation}=require("../middlewares/bodyValidation")
 const { awsApi } = require("../middlewares/aws");
 const {
   userCreate,
@@ -25,7 +26,7 @@ router.put("/user/:userId/profile",auth,updateValidation, updateUser);
 
 // *---------------------------ProductApis-------------------------------------------------------------------------------------------------------------
 
-router.post("/products",awsApi,productCreate)
+router.post("/products",bodyValidation,awsApi,productCreate)
 router.get("/products",getProduct) // * filter
 router.get("/products/:productId",getByid)
 router.put("/products/:productId",productUpdate,UpdateProduct)
@@ -33,7 +34,7 @@ router.delete("/products/:productId",deleteProduct)
 
 // *---------------------------cartApis-------------------------------------------------------------------------------------------------------------
 
-router.post("/users/:userId/cart", auth,createCart)
+router.post("/users/:userId/cart",auth,createCart)
 router.put("/users/:userId/cart", auth,updateCart)
 router.get("/users/:userId/cart", auth,getCart)
 router.delete("/users/:userId/cart", auth,deletCart)

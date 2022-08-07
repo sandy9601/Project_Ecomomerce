@@ -28,6 +28,7 @@ const createCart = async function (req, res) {
         return res.status(400).send({ status: false, message: "Body should Not Be Empty" });
     }
 
+
     if (!mongoose.isValidObjectId(userId)) {
       return res
         .status(400)
@@ -93,14 +94,14 @@ const createCart = async function (req, res) {
     let presentCart = await cartModel.findOne({ userId: userId });
 
 
-if(presentCart){
-    if(presentCart.items.length==0){
-        return res.status(400).send({
-            status: false,
-            message: "cart deleted",
-          });
+// if(presentCart){
+//     if(presentCart.items.length==0){
+//         return res.status(400).send({
+//             status: false,
+//             message: "cart deleted",
+//           });
 
-    }}
+//     }}
 
 
     if (presentCart !== null) {

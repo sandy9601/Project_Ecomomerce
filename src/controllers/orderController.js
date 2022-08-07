@@ -96,12 +96,12 @@ const updateOrder = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "status is Mandatory" });
-    if (!["pending", "completed", "cancelled"].includes(status.trim())) {
+    if (!["completed", "cancelled"].includes(status.trim())) {
       return res
         .status(400)
         .send({
           status: false,
-          message: 'status only allows ["pending", "completed", "cancelled"]',
+          message: 'status only allows ["completed", "cancelled"]',
         });
     }
 

@@ -1,5 +1,6 @@
 const aws = require("aws-sdk");
 
+
 // s3 and cloud stodare
 //  step1: multer will be used to get access to the file in nodejs( from previous session learnings)
 //  step2:[BEST PRACTISE]:- always write s2 upload function separately- in a separate file/function..exptect it to take file as input and return the uploaded file as output
@@ -45,7 +46,7 @@ const awsApi = async function (req, res, next) {
     if (files.length == 0) {
       return res
         .status(400)
-        .send({ status: false, message: "No file found in profileImage" });
+        .send({ status: false, message: "please enter profileImage/productImage" });
     }
 
     if (!/\.(gif|jpe?g|tiff?|png|webp|bmp|jfif)$/i.test(files[0].originalname)) {
@@ -65,7 +66,7 @@ const awsApi = async function (req, res, next) {
 
     next();
   } catch (err) {
-    res.status(500).send({ msg: err });
+    res.status(500).send({ status:false,error: err.message });
   }
 };
 

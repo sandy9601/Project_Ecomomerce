@@ -18,8 +18,7 @@ const isValidName = (name) => {
 const productCreate = async function (req, res) {
   try {
     let data = req.body;
-    data.productImage = req.uploadedFileURL;
-
+ 
     var {
       title,
       description,
@@ -36,13 +35,8 @@ const productCreate = async function (req, res) {
     } = data;
 
     // checking the body is Empty Or not
-    if (Object.keys(data).length == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Body couldnot be empty" });
-    }
 
-    // * title validation
+      // * title validation
 
     if (!isValid(title)) {
       return res
@@ -85,7 +79,7 @@ const productCreate = async function (req, res) {
       if (currencyId != "INR") {
         return res
           .status(400)
-          .send({ status: false, message: "currencyId formate is not correct" });
+          .send({ status: false, message: "currencyId consist only INR" });
       }
     }
     else {
@@ -98,7 +92,7 @@ const productCreate = async function (req, res) {
       if (currencyFormat != "₹") {
         return res
           .status(400)
-          .send({ status: false, message: "currencyFormat formate is not correct" });
+          .send({ status: false, message: "currencyFormat consist only ₹ " });
       }
     }
     else {
@@ -163,6 +157,8 @@ const productCreate = async function (req, res) {
         return res.status(400).send({ status: false, message: "isDeleted is false by defualt" })
 
     }
+    data.productImage=  req.uploadedFileURL
+  
     //* creating product
     const createProduct = await productModel.create(data);
     if (createProduct)
@@ -204,7 +200,8 @@ const getProduct = async function (req, res) {
       .find({
         $and: [{ isDeleted: false }, filter],
       })
-      .sort({ price: 1 }); //.sort({price:-1})
+      .sort({ price: 1 }); 
+      //.sort({price:-1})
     if (filterData.length > 0) {
       return res
         .status(200)
@@ -291,7 +288,7 @@ const deleteProduct = async function (req, res) {
     } else {
       return res
         .status(404)
-        .send({ status: false, message: "No product found" });
+        .send({ status: false, message: "No product found or product deleted already" });
     }
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });

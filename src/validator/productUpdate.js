@@ -60,7 +60,7 @@ const productUpdate = async function (req, res, next) {
       if (Object.keys(data).length == 0) {
         return res
           .status(400)
-          .send({ status: false, message: "Body couldnot be empty" });
+          .send({ status: false, message: "enter atleast one item to update" });
       }
     }
 
@@ -172,7 +172,7 @@ const productUpdate = async function (req, res, next) {
           let uploadedFileURL = await uploadFile(productImage[0]);
           return uploadedFileURL;
         } else {
-          return res.status(400).send({ msg: "No file found" });
+          return res.status(400).send({ status:false,message: "No file found" });
         }
       };
       final.productImage = await awsApi();
