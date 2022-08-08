@@ -178,7 +178,7 @@ const getProduct = async function (req, res) {
   try {
     var filter = {};
     let query = req.query;
-    let { size, name, priceGreaterThan, priceLessThan } = query;
+    let { size, name, priceGreaterThan, priceLessThan,priceSort } = query;
     if (size) {
       filter.availableSizes = { $in: size.split(",").map((x) => x.toUpperCase().trim()) }
     }
@@ -195,13 +195,25 @@ const getProduct = async function (req, res) {
     if (priceGreaterThan && priceLessThan) {
       filter.price = { $gt: priceGreaterThan, $lt: priceLessThan };
     }
-
-    const filterData = await productModel
+    if(!priceSort){
+      return res.status(400).send({status:false,message:"please select priceSort"})
+    }
+if(priceSort==1){
+    var filterData = await productModel
       .find({
         $and: [{ isDeleted: false }, filter],
       })
-      .sort({ price: 1 }); 
-      //.sort({price:-1})
+      .sort({ price: 1 });
+    }
+
+    if(priceSort==-1) {
+      var filterData = await productModel
+      .find({
+        $and: [{ isDeleted: false }, filter],
+      })
+      .sort({ price: -1 });
+    }
+
     if (filterData.length > 0) {
       return res
         .status(200)

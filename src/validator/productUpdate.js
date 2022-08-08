@@ -8,11 +8,11 @@ const isValid = function (value) {
   return true;
 };
 const isValidUserDetails = (UserDetails) => {
-    if (/^(?=.*?[a-zA-Z])[. %?a-zA-Z\d ]+$/.test(UserDetails)) return true;
-  };
+  if (/^(?=.*?[a-zA-Z])[. %?a-zA-Z\d ]+$/.test(UserDetails)) return true;
+};
 
 const isValidName = (name) => {
-  if (/^[ a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/.test(name)) return true;
+  if (/^[ a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z])$/.test(name)) return true;
 };
 
 const productUpdate = async function (req, res, next) {
@@ -60,11 +60,14 @@ const productUpdate = async function (req, res, next) {
       if (Object.keys(data).length == 0) {
         return res
           .status(400)
-          .send({ status: false, message: "enter atleast one item to update" });
+          .send({ status: false, message: "Body couldnot be empty" });
       }
     }
 
     // * title validation
+    if (title == "") {
+      return res.status(400).send({ status: false, message: "please enter title as a value" })
+    }
 
     if (title) {
       if (!isValid(title)) {
@@ -90,6 +93,10 @@ const productUpdate = async function (req, res, next) {
     }
 
     // * description validation
+    if (description == "") {
+      return res.status(400).send({ status: false, message: "please enter description as a value" })
+    }
+
     if (description) {
       if (!isValid(description)) {
         return res
@@ -106,6 +113,9 @@ const productUpdate = async function (req, res, next) {
     }
 
     // * price validation
+    if (price == "") {
+      return res.status(400).send({ status: false, message: "please enter price as a value" })
+    }
     if (price) {
       if (!price || price == "") {
         return res
@@ -123,7 +133,9 @@ const productUpdate = async function (req, res, next) {
     }
 
     // * currencyId validation
-
+    if (currencyId == "") {
+      return res.status(400).send({ status: false, message: "please enter currencyId as a value" })
+    }
     if (currencyId) {
       if (currencyId.toUpperCase() != "INR") {
         return res.status(400).send({
@@ -135,7 +147,9 @@ const productUpdate = async function (req, res, next) {
     }
 
     // * currencyId validation
-
+    if (currencyFormat == "") {
+      return res.status(400).send({ status: false, message: "please enter currencyFormat as a value" })
+    }
     if (currencyFormat) {
       if (currencyFormat != "₹") {
         return res.status(400).send({
@@ -145,7 +159,9 @@ const productUpdate = async function (req, res, next) {
       }
       final.currencyFormat = currencyFormat;
     }
-
+    if (isFreeShipping == "") {
+      return res.status(400).send({ status: false, message: "please enter isFreeShipping as a value" })
+    }
     if (isFreeShipping) {
       if (!["true", "false"].includes(isFreeShipping)) {
         return res.status(400).send({
@@ -157,6 +173,11 @@ const productUpdate = async function (req, res, next) {
     }
 
     // * productImageUpdate
+    // console.log(productImage)
+    // console.log(req.body)
+    if (req.body.productImage == "") {
+      return res.status(400).send({ status: false, message: "please enter profileImage" })
+    }
 
     if (productImage.length != 0) {
       if (
@@ -168,17 +189,21 @@ const productUpdate = async function (req, res, next) {
         });
       }
       const awsApi = async function (req, res) {
+       
         if (productImage && productImage.length > 0) {
           let uploadedFileURL = await uploadFile(productImage[0]);
           return uploadedFileURL;
         } else {
-          return res.status(400).send({ status:false,message: "No file found" });
+          return res.status(400).send({ msg: "No file found" });
         }
       };
       final.productImage = await awsApi();
     }
 
     // * styleValidation
+    if (style == "") {
+      return res.status(400).send({ status: false, message: "please enter style value" })
+    }
     if (style) {
       if (style) {
         if (!isValidUserDetails(style)) {
@@ -191,23 +216,27 @@ const productUpdate = async function (req, res, next) {
       final.style = style;
     }
     // * availableSizesValidation
-
-    if (availableSizes) {
-        let array = availableSizes.split(",").map(x => x.toUpperCase().trim())
-        for (let i = 0; i < array.length; i++) {
-            if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim()))) {
-                return res.status(400).send({ status: false, message: 'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]' })
-            }
-        }
-        if (Array.isArray(array)) {
-            let uniqeSize = new Set(array)
-          let result = [...uniqeSize]
-
-            final.availableSizes=result
-
-        }
+    if (availableSizes == "") {
+      return res.status(400).send({ status: false, message: "please enter availableSizes value" })
     }
-         
+    if (availableSizes) {
+      let array = availableSizes.split(",").map(x => x.toUpperCase().trim())
+      for (let i = 0; i < array.length; i++) {
+        if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim()))) {
+          return res.status(400).send({ status: false, message: 'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]' })
+        }
+      }
+      if (Array.isArray(array)) {
+        let uniqeSize = new Set(array)
+        let result = [...uniqeSize]
+
+        final.availableSizes = result
+
+      }
+    }
+    if (installments == "") {
+      return res.status(400).send({ status: false, message: "please enter installments value" })
+    }
     if (installments) {
       if (!/^[0-9]+$/.test(installments))
         return res.status(400).send({
