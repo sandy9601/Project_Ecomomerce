@@ -28,6 +28,7 @@ const userCreate = async function (req, res) {
 const logInUser = async function (req, res) {
   try {
     const { email, password } = req.body;
+    
 
     //* Email and Password Validation
     if (!email)

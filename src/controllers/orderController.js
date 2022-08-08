@@ -8,22 +8,42 @@ const createOrder = async function (req, res) {
   try {
     data = req.body;
     const userId = req.params.userId;
+    var{cartId,cancellable}=req.body
     const findingCart = await cartModel
-      .findOne({ userId: userId })
+      .findOne({ userId: userId ,cartId:cartId})
       .select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 });
 
-    if (findingCart == null || findingCart.items.length == 0) {
+      if(!findingCart){
+        return res
+        .status(400)
+        .send({ status: false, message: "cart doesnot exist" });
+
+      }
+    if (findingCart.items.length == 0) {
       return res
         .status(400)
-        .send({ status: false, message: "please first add products in cart" });
+        .send({ status: false, message: "odrer is placed already" });
     }
-
+  
     var updateOrder = {};
     updateOrder.userId = findingCart.userId.toString();
     updateOrder.totalQuantity = 0;
     updateOrder.totalPrice = findingCart.totalPrice;
     updateOrder["items"] = findingCart.items;
     updateOrder.totalItems = findingCart.totalItems;
+    if(cancellable){
+      if(!(cancellable=="false")||(cancellable=="true")){
+        return res
+        .status(400)
+        .send({ status: false, message: "cancellable is only takes true or false values" });
+
+      }
+      else{
+        updateOrder.cancellable=cancellable
+      }
+    }
+
+
 
     for (let i = 0; i < updateOrder.items.length; i++) {
       updateOrder.totalQuantity += findingCart.items[i].quantity;
