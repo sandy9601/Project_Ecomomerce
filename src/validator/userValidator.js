@@ -146,7 +146,7 @@ const userValidation = async function (req, res, next) {
         if (!isValid(shipping.street)) return res.status(400).send({ status: false, message: " shipping street is invalid " })
         if (!isValid(shipping.city)) return res.status(400).send({ status: false, message: " shipping city is invalid" })
         if (!isValidUserDetails(shipping.city)) return res.status(400).send({ status: false, message: "Shipping city is invalid" })
-        if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(billing.pincode)) return res.status(400).send({ status: false, message: " shipping pincode is invalid" })
+        if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(shipping.pincode)) return res.status(400).send({ status: false, message: " shipping pincode is invalid" })
 
 
 
@@ -157,7 +157,7 @@ const userValidation = async function (req, res, next) {
 
         if (!isValid(billing.street)) return res.status(400).send({ status: false, message: " billing street is invalid " })
         if (!isValid(billing.city)) return res.status(400).send({ status: false, message: "billing city is invalid" })
-        if (!isValidUserDetails(billing.city)) return res.status(400).send({ status: false, message: "Shipping city is invalid" })
+        if (!isValidUserDetails(billing.city)) return res.status(400).send({ status: false, message: "billing city is invalid" })
         if (!/^[1-9]{1}[0-9]{2}[0-9]{3}$/.test(billing.pincode)) return res.status(400).send({ status: false, message: " billing pincode is invalid" })
 
         data.address = address
