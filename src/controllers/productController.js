@@ -18,7 +18,7 @@ const isValidName = (name) => {
 const productCreate = async function (req, res) {
   try {
     let data = req.body;
- 
+
     var {
       title,
       description,
@@ -36,7 +36,7 @@ const productCreate = async function (req, res) {
 
     // checking the body is Empty Or not
 
-      // * title validation
+    // * title validation
 
     if (!isValid(title)) {
       return res
@@ -53,23 +53,42 @@ const productCreate = async function (req, res) {
     }
 
     //* Checking Duplicate Title
-    const titleCheck = await productModel.findOne({ title: title })
+    const titleCheck = await productModel.findOne({ title: title });
     if (titleCheck) {
-      return res.status(400).send({ status: false, messsage: `title ${title} is already used try another one` })
+      return res
+        .status(400)
+        .send({
+          status: false,
+          messsage: `title ${title} is already used try another one`,
+        });
     }
-
 
     // * description validation
 
-    if (!isValid(description)) { return res.status(400).send({ status: false, message: "description is required" }) }
+    if (!isValid(description)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "description is required" });
+    }
 
-    if (!/^(?=.*?[a-zA-Z])[. ,%?a-zA-Z\d ]+$/.test(description)) { return res.status(400).send({ status: false, message: "description is formate is not correct" }) }
-    if (!price) { return res.status(400).send({ status: false, message: "price is required" }) }
+    if (!/^(?=.*?[a-zA-Z])[. ,%?a-zA-Z\d ]+$/.test(description)) {
+      return res
+        .status(400)
+        .send({
+          status: false,
+          message: "description is formate is not correct",
+        });
+    }
+    if (!price) {
+      return res
+        .status(400)
+        .send({ status: false, message: "price is required" });
+    }
     if (price) {
       if (!/^[1-9]\d{0,7}(?:\.\d{1,4})?|\.\d{1,4}$/.test(price)) {
         return res
           .status(400)
-          .send({ status: false, message: "price formate is not correct" })
+          .send({ status: false, message: "price formate is not correct" });
       }
     }
 
@@ -81,9 +100,8 @@ const productCreate = async function (req, res) {
           .status(400)
           .send({ status: false, message: "currencyId consist only INR" });
       }
-    }
-    else {
-      data.currencyId = "INR"
+    } else {
+      data.currencyId = "INR";
     }
 
     // * currencyId validation
@@ -94,18 +112,19 @@ const productCreate = async function (req, res) {
           .status(400)
           .send({ status: false, message: "currencyFormat consist only ₹ " });
       }
-    }
-    else {
-      data.currencyFormat = "₹"
+    } else {
+      data.currencyFormat = "₹";
     }
 
-    if (isFreeShipping)
+    if (isFreeShipping || isFreeShipping == "")
       if (!["false"].includes(isFreeShipping)) {
         return res
           .status(400)
-          .send({ status: false, message: "isFreeShipping formate is not correct" });
+          .send({
+            status: false,
+            message: "isFreeShipping formate is not correct",
+          });
       }
-
 
     // * styleValidation
     if (style) {
@@ -120,45 +139,62 @@ const productCreate = async function (req, res) {
     // * availableSizesValidation
 
     if (!availableSizes || availableSizes == "") {
-      return res.status(400).send({ status: false, message: "availableSizes is required" })
+      return res
+        .status(400)
+        .send({ status: false, message: "availableSizes is required" });
     }
 
     if (availableSizes) {
-      let array = availableSizes.split(",").map(x => x.toUpperCase().trim())
+      let array = availableSizes.split(",").map((x) => x.toUpperCase().trim());
       for (let i = 0; i < array.length; i++) {
-        if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim()))) {
-          return res.status(400).send({ status: false, message: 'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]' })
+        if (
+          !["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i].trim())
+        ) {
+          return res
+            .status(400)
+            .send({
+              status: false,
+              message:
+                'Sizes only available from ["S", "XS", "M", "X", "L", "XXL", "XL"]',
+            });
         }
-
       }
       if (Array.isArray(array)) {
-        let uniqeSize = new Set(array)
-        let result = [...uniqeSize]
+        let uniqeSize = new Set(array);
+        let result = [...uniqeSize];
 
-        data.availableSizes = result
-
+        data.availableSizes = result;
       }
     }
 
     if (installments) {
       if (!/^[0-9]+$/.test(installments))
-        return res.status(400).send({ status: false, message: "installments will only consist number" })
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "installments will only consist number",
+          });
     }
 
-
     if (deletedAt) {
-      if (deletedAt != 'null')
-        return res.status(400).send({ status: false, message: "deletedAt is not required at the moment" })
-
+      if (deletedAt != "null")
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "deletedAt is not required at the moment",
+          });
     }
 
     if (isDeleted) {
-      if (isDeleted != 'false')
-        return res.status(400).send({ status: false, message: "isDeleted is false by defualt" })
-
+      if (isDeleted != "false")
+        return res
+          .status(400)
+          .send({ status: false, message: "isDeleted is false by defualt" });
     }
-    data.productImage=  req.uploadedFileURL
-  
+    data.productImage = req.uploadedFileURL;
+
     //* creating product
     const createProduct = await productModel.create(data);
     if (createProduct)
@@ -178,12 +214,14 @@ const getProduct = async function (req, res) {
   try {
     var filter = {};
     let query = req.query;
-    let { size, name, priceGreaterThan, priceLessThan,priceSort } = query;
+    let { size, name, priceGreaterThan, priceLessThan, priceSort } = query;
     if (size) {
-      filter.availableSizes = { $in: size.split(",").map((x) => x.toUpperCase().trim()) }
+      filter.availableSizes = {
+        $in: size.split(",").map((x) => x.toUpperCase().trim()),
+      };
     }
     if (name) {
-      filter.title = { $regex: ".*" + name.toLowerCase().trim() + ".*" }
+      filter.title = { $regex: ".*" + name.toLowerCase().trim() + ".*" };
     }
     if (priceGreaterThan) {
       filter.price = { $gt: priceGreaterThan };
@@ -195,24 +233,17 @@ const getProduct = async function (req, res) {
     if (priceGreaterThan && priceLessThan) {
       filter.price = { $gt: priceGreaterThan, $lt: priceLessThan };
     }
-    if(!priceSort){
-      return res.status(400).send({status:false,message:"please select priceSort"})
-    }
-if(priceSort==1){
-    var filterData = await productModel
-      .find({
-        $and: [{ isDeleted: false }, filter],
-      })
-      .sort({ price: 1 });
+    if (priceSort) {
+      if (!(priceSort == -1 || priceSort == 1)) {
+        return res
+          .status(400)
+          .send({ status: false, message: " please enter valid priceSort " });
+      }
     }
 
-    if(priceSort==-1) {
-      var filterData = await productModel
-      .find({
-        $and: [{ isDeleted: false }, filter],
-      })
-      .sort({ price: -1 });
-    }
+    var filterData = await productModel
+      .find({ $and: [{ isDeleted: false }, filter] })
+      .sort({ price: priceSort });
 
     if (filterData.length > 0) {
       return res
@@ -300,7 +331,10 @@ const deleteProduct = async function (req, res) {
     } else {
       return res
         .status(404)
-        .send({ status: false, message: "No product found or product deleted already" });
+        .send({
+          status: false,
+          message: "No product found or product deleted already",
+        });
     }
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });
